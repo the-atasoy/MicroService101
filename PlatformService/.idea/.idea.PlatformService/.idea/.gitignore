@@ -1,0 +1,62 @@
+# Ignore build results
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.ncrunch*
+
+# Rider / IDE settings
+.idea/
+*.sln.iml
+
+# Visual Studio Code settings
+.vscode/
+
+# Logs
+*.log
+*.tlog
+*.log1
+*.log2
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Package directories
+**/node_modules/
+**/packages/
+
+# ASP.NET Core secrets and local settings
+secrets.json
+appsettings.*.json
+
+# NuGet
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Entity Framework migrations
+*.Designer.cs
+
+# Temporary files
+~$*
+
+# Azure specific
+*.azureFunctions/
+
+# Coverage reports
+*.coverage
+*.coveragexml
+*.codecov
+
+# JetBrains Rider settings
+.idea/
+
+# Resharper settings
+*.DotSettings.user
+
+# Dependency graph
+*.dgml
