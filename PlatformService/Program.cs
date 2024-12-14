@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Data;
+using PlatformService.Data.Repository.Platform;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureServices(builder.Services);
@@ -27,4 +28,5 @@ void ConfigureServices(IServiceCollection services)
     });
     services.AddScoped<IPlatformRepository, PlatformRepository>();
     services.AddControllers();
+    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
