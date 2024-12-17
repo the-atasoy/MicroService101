@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Data;
 using PlatformService.Data.Repository.Platform;
@@ -27,6 +28,10 @@ void ConfigureServices(IServiceCollection services)
         options.UseInMemoryDatabase("InMem");
     });
     services.AddScoped<IPlatformRepository, PlatformRepository>();
-    services.AddControllers();
+    services.AddControllers(options =>
+    {
+        options.Filters.Add(new ConsumesAttribute("application/json"));
+        options.Filters.Add(new ProducesAttribute("application/json"));
+    });
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
