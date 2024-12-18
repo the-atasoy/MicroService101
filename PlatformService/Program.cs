@@ -1,41 +1,37 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PlatformService.Data;
+using PlatformService.Data.Repository.Platform;
+
 var builder = WebApplication.CreateBuilder(args);
+ConfigureServices(builder.Services);
+var application = builder.Build();
+Configure(application);
+application.Run();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+void Configure(WebApplication app)
 {
-    app.MapOpenApi();
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+    }
+    app.UseHttpsRedirection();
+    app.MapControllers();
+    PrepDb.PrepPopulation(app);
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+void ConfigureServices(IServiceCollection services)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    services.AddOpenApi();
+    services.AddDbContext<AppDbContext>(options =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        options.UseInMemoryDatabase("InMem");
+    });
+    services.AddScoped<IPlatformRepository, PlatformRepository>();
+    services.AddControllers(options =>
+    {
+        options.Filters.Add(new ConsumesAttribute("application/json"));
+        options.Filters.Add(new ProducesAttribute("application/json"));
+    });
+    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
