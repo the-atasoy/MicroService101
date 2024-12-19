@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: platforms-deployment
+  name: platform-deployment
 spec:
   replicas: 1
   selector:
@@ -15,3 +15,17 @@ spec:
       containers:
         - name: platformservice
           image: theatasoy/platformservice:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: platformservice
+  ports:
+  - name: platformservice
+    protocol: TCP
+    port: 80
+    targetPort: 8080

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Data;
 using PlatformService.Data.Repository.Platform;
+using PlatformService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureServices(builder.Services);
@@ -28,10 +29,13 @@ void ConfigureServices(IServiceCollection services)
         options.UseInMemoryDatabase("InMem");
     });
     services.AddScoped<IPlatformRepository, PlatformRepository>();
+    services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
     services.AddControllers(options =>
     {
         options.Filters.Add(new ConsumesAttribute("application/json"));
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    
+    Console.WriteLine($"==> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
 }
