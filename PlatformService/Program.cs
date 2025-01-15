@@ -5,9 +5,14 @@ using PlatformService.Data.Repository.Platform;
 using PlatformService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
+var environment = builder.Environment;
 ConfigureServices(builder.Services);
+
 var application = builder.Build();
 Configure(application);
+
 application.Run();
 
 void Configure(WebApplication app)
@@ -24,10 +29,13 @@ void Configure(WebApplication app)
 void ConfigureServices(IServiceCollection services)
 {
     services.AddOpenApi();
-    services.AddDbContext<AppDbContext>(options =>
-    {
-        options.UseInMemoryDatabase("InMem");
-    });
+    if (environment.IsProduction())
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    else
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseInMemoryDatabase("InMem"));
+    
     services.AddScoped<IPlatformRepository, PlatformRepository>();
     services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
     services.AddControllers(options =>
