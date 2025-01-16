@@ -17,24 +17,16 @@ application.Run();
 
 void Configure(WebApplication app)
 {
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
     app.UseHttpsRedirection();
     app.MapControllers();
-    PrepDb.PrepPopulation(app);
+    PrepDb.Migrate(app);
 }
 
 void ConfigureServices(IServiceCollection services)
 {
-    services.AddOpenApi();
-    if (environment.IsProduction())
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-    else
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseInMemoryDatabase("InMem"));
+    Console.WriteLine($"--> Environment: {environment.EnvironmentName}");
+    services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     
     services.AddScoped<IPlatformRepository, PlatformRepository>();
     services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
@@ -45,5 +37,5 @@ void ConfigureServices(IServiceCollection services)
     });
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     
-    Console.WriteLine($"==> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
+    Console.WriteLine($"--> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
 }
