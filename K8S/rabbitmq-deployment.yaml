@@ -42,9 +42,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq-nodeport-srv
+  name: rabbitmq-loadbalancer-srv
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: rabbitmq
   ports:
