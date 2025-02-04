@@ -19,6 +19,6 @@ public class HttpCommandDataClient(HttpClient client, IConfiguration configurati
 
         Console.WriteLine(response.IsSuccessStatusCode
             ? "--> Sync POST to Command Service was OK!"
-            : "--> Sync POST to Command Service was NOT OK!");
+            : $"--> Sync POST to Command Service was NOT OK! {response.ReasonPhrase}");
     }
 }

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.Data.Repository.Platform;
 using PlatformService.SyncDataServices.Http;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,7 @@ void ConfigureServices(IServiceCollection services)
     
     services.AddScoped<IPlatformRepository, PlatformRepository>();
     services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+    services.AddSingleton<IMessageBusClient, MessageBusClient>();
     services.AddControllers(options =>
     {
         options.Filters.Add(new ConsumesAttribute("application/json"));

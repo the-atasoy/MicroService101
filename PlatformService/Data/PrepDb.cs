@@ -11,7 +11,7 @@ public static class PrepDb
         Console.WriteLine("--> Attempting to Applying Migration");
         try
         {
-            serviceScope.ServiceProvider.GetService<AppDbContext>().Database.Migrate();
+            serviceScope.ServiceProvider.GetService<AppDbContext>()!.Database.Migrate();
         }
         catch (Exception e)
         {
