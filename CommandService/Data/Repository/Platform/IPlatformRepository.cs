@@ -6,4 +6,5 @@ public interface IPlatformRepository
     Task<IEnumerable<Models.Platform>> GetAllAsync();
     Task CreateAsync(Models.Platform platform);
     Task<bool> IsPlatformExistAsync(Guid id);
+    Task<bool> IsExternalPlatformExistAsync(Guid externalId);
 }

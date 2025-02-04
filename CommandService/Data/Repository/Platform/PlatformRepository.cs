@@ -14,4 +14,7 @@ public class PlatformRepository(AppDbContext context) : IPlatformRepository
 
     public async Task<bool> IsPlatformExistAsync(Guid id) =>
         await context.Platform.AnyAsync(p => p.Id == id);
+    
+    public async Task<bool> IsExternalPlatformExistAsync(Guid externalId) =>
+        await context.Platform.AnyAsync(p => p.ExternalId == externalId);
 }

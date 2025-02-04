@@ -42,6 +42,9 @@ namespace PlatformService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Platform");
                 });
 #pragma warning restore 612, 618
