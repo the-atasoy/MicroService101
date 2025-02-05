@@ -24,3 +24,10 @@ spec:
                 name: command-clusterip-srv
                 port:
                   number: 80
+          - path: /c/command(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: command-clusterip-srv
+                port:
+                  number: 80
