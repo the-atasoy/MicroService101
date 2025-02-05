@@ -27,7 +27,7 @@ public class CommandController(
         if(!await platformRepository.IsPlatformExistAsync(platformId))
             return NotFound();
         
-        return Ok(mapper.Map<CommandReadDto>(await repository.GetAllAsync(platformId)));
+        return Ok(mapper.Map<List<CommandReadDto>>(await repository.GetAllAsync(platformId)));
     }
     
     [HttpPost]

@@ -4,5 +4,5 @@ namespace CommandService.EventProcessing;
 
 public interface IEventProcessor
 {
-    Task ProcessEvent(GenericEventDto eventDto);
+    Task ProcessEvent(string message);
 }

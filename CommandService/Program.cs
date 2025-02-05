@@ -1,3 +1,4 @@
+using CommandService.AsyncDataServices;
 using CommandService.Data;
 using CommandService.Data.Repository.Command;
 using CommandService.Data.Repository.Platform;
@@ -33,6 +34,7 @@ void ConfigureServices(IServiceCollection services)
         options.Filters.Add(new ConsumesAttribute("application/json"));
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
+    services.AddHostedService<MessageBusSubscriber>();
     services.AddSingleton<IEventProcessor, EventProcessor>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }

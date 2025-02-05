@@ -8,20 +8,20 @@ namespace CommandService.EventProcessing;
 
 public class EventProcessor(IServiceScopeFactory serviceScopeFactory, IMapper mapper) : IEventProcessor
 {
-    public async Task ProcessEvent(GenericEventDto eventDto)
+    public async Task ProcessEvent(string message)
     {
-        var eventType = DetermineEvent(eventDto.Event);
+        var eventType = DetermineEvent(message);
         switch (eventType)
         {
             case EventType.PlatformPublished:
-                // TODO: Add Platform
+                await AddPlatform(message);
                 break;
             default:
                 break;
         }
     }
 
-    private async Task addPlatform(string platformPublishedMessage)
+    private async Task AddPlatform(string platformPublishedMessage)
     {
         using var serviceScope = serviceScopeFactory.CreateScope();
         var repo = serviceScope.ServiceProvider.GetRequiredService<IPlatformRepository>();
@@ -34,6 +34,7 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory, IMapper ma
             {
                 await repo.CreateAsync(platform);
                 await repo.SaveChangesAsync();
+                Console.WriteLine("--> Platform added to DB");
             }
             else
             {
