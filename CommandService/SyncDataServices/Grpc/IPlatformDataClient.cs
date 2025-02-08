@@ -1,6 +1,8 @@
-namespace PlatformService.SyncDataServices.Grpc;
+using CommandService.Models;
 
-public class IPlatformDataClient
+namespace CommandService.SyncDataServices.Grpc;
+
+public interface IPlatformDataClient
 {
-    
+    IEnumerable<Platform> ReturnAllPlatforms();
 }

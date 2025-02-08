@@ -1,17 +1,27 @@
 using AutoMapper;
-using Grpc.Core;
-using PlatformService.Data.Repository.Platform;
+using CommandService.Models;
+using Grpc.Net.Client;
+using PlatformService;
 
 namespace CommandService.SyncDataServices.Grpc;
 
-public class GrpcPlatformService(IPlatformRepository repository, IMapper mapper) : GrpcPlatform.GrpcPlatformBase
+public class PlatformDataClient(IConfiguration configuration, IMapper mapper) : IPlatformDataClient
 {
-    public override async Task<PlatformResponse> GetAll(GetAllRequest request, ServerCallContext context)
+    public IEnumerable<Platform> ReturnAllPlatforms()
     {
-        var platforms = await repository.GetAllAsync();
-        return new PlatformResponse
+        Console.WriteLine($"--> Calling gRPC Service: {configuration["GrpcPlatform"]} to get Platforms");
+        var channel = GrpcChannel.ForAddress(configuration["GrpcPlatform"]!);
+        var client = new GrpcPlatform.GrpcPlatformClient(channel);
+        var request = new GetAllRequest();
+        try
         {
-            Platform = { platforms.Select(platform => mapper.Map<GrpcPlatformModel>(platform)) }
-        };
+            var reply = client.GetAll(request);
+            return mapper.Map<IEnumerable<Platform>>(reply.Platform);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"--> Could not call the gRPC Server. {ex.Message}");
+            return null!;
+        }
     }
 }

@@ -3,6 +3,7 @@ using CommandService.Data;
 using CommandService.Data.Repository.Command;
 using CommandService.Data.Repository.Platform;
 using CommandService.EventProcessing;
+using CommandService.SyncDataServices.Grpc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ void Configure(WebApplication app)
 {
     app.UseHttpsRedirection();
     app.MapControllers();
-    PrepDb.Migrate(app);
+    PrepDb.Migrate(app).GetAwaiter().GetResult();
 }
 
 void ConfigureServices(IServiceCollection services)
@@ -35,6 +36,7 @@ void ConfigureServices(IServiceCollection services)
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
     services.AddHostedService<MessageBusSubscriber>();
+    services.AddScoped<IPlatformDataClient, PlatformDataClient>();
     services.AddSingleton<IEventProcessor, EventProcessor>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }

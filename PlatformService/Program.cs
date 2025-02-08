@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.Data.Repository.Platform;
+using PlatformService.SyncDataServices.Grpc;
 using PlatformService.SyncDataServices.Http;
 using RabbitMQ.Client;
 
@@ -21,6 +22,7 @@ void Configure(WebApplication app)
 {
     app.UseHttpsRedirection();
     app.MapControllers();
+    app.MapGrpcService<GrpcPlatformService>();
     PrepDb.Migrate(app);
 }
 
@@ -33,6 +35,7 @@ void ConfigureServices(IServiceCollection services)
     services.AddScoped<IPlatformRepository, PlatformRepository>();
     services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
     services.AddSingleton<IMessageBusClient, MessageBusClient>();
+    services.AddGrpc();
     services.AddControllers(options =>
     {
         options.Filters.Add(new ConsumesAttribute("application/json"));

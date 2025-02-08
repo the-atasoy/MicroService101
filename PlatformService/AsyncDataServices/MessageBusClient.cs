@@ -8,8 +8,8 @@ namespace PlatformService.AsyncDataServices;
 
 public class MessageBusClient : IMessageBusClient
 {
-    private readonly IConnection _connection;
-    private readonly IChannel _channel;
+    private readonly IConnection _connection = null!;
+    private readonly IChannel _channel = null!;
 
     public MessageBusClient(IConfiguration configuration)
     {
