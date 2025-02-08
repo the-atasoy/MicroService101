@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlatformService";
+
+message GetAllRequest {}
+
+message GrpcPlatformModel {
+    string PlatformId = 1;
+    string Name = 2;
+    string Publisher = 3;
+    string Cost = 4;
+}
