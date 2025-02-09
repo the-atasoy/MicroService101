@@ -1,14 +1,15 @@
+using CommandService.API.Messaging.gRPC;
+using CommandService.API.Messaging.RabbitMQ;
+using CommandService.API.Messaging.RabbitMQ.EventProcessing;
+using CommandService.Business.Command;
+using CommandService.Business.Platform;
+using CommandService.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PlatformService.API.Messaging.gRPC;
-using PlatformService.API.Messaging.RabbitMQ;
-using PlatformService.Business.Platform;
-using PlatformService.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
-var environment = builder.Environment;
 ConfigureServices(builder.Services);
 
 var application = builder.Build();
@@ -20,25 +21,22 @@ void Configure(WebApplication app)
 {
     app.UseHttpsRedirection();
     app.MapControllers();
-    app.MapGrpcService<GrpcPlatformService>();
-    PrepDb.Migrate(app);
+    PrepDb.Migrate(app).GetAwaiter().GetResult();
 }
 
 void ConfigureServices(IServiceCollection services)
 {
-    Console.WriteLine($"--> Environment: {environment.EnvironmentName}");
     services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-    
     services.AddScoped<IPlatformHandler, PlatformHandler>();
-    services.AddSingleton<IMessageBusClient, MessageBusClient>();
-    services.AddGrpc();
+    services.AddScoped<ICommandHandler, CommandHandler>();
     services.AddControllers(options =>
     {
         options.Filters.Add(new ConsumesAttribute("application/json"));
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
+    services.AddHostedService<MessageBusSubscriber>();
+    services.AddScoped<IPlatformDataClient, PlatformDataClient>();
+    services.AddSingleton<IEventProcessor, EventProcessor>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-    
-    Console.WriteLine($"--> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
 }
