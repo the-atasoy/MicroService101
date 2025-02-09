@@ -26,7 +26,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\platform.proto" GrpcServices="Client" />
+      <Protobuf Include="src\API\Messaging\gRPC\Protos\platform.proto">
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
     </ItemGroup>
 
 </Project>
