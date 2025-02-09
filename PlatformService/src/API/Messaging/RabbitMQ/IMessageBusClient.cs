@@ -1,6 +1,6 @@
-using PlatformService.Dtos.Platform;
+using PlatformService.Data.Dto.Platform;
 
-namespace PlatformService.AsyncDataServices;
+namespace PlatformService.API.Messaging.RabbitMQ;
 
 public interface IMessageBusClient
 {

@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PlatformService.AsyncDataServices;
+using PlatformService.API.Messaging.gRPC;
+using PlatformService.API.Messaging.RabbitMQ;
+using PlatformService.Business.Platform;
 using PlatformService.Data;
-using PlatformService.Data.Repository.Platform;
-using PlatformService.SyncDataServices.Grpc;
-using PlatformService.SyncDataServices.Http;
-using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +30,7 @@ void ConfigureServices(IServiceCollection services)
     services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     
-    services.AddScoped<IPlatformRepository, PlatformRepository>();
-    services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+    services.AddScoped<IPlatformHandler, PlatformHandler>();
     services.AddSingleton<IMessageBusClient, MessageBusClient>();
     services.AddGrpc();
     services.AddControllers(options =>

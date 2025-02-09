@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace PlatformService.Models;
+namespace PlatformService.Data.Entity;
 
 [Index(nameof(Name), IsUnique = true)]
 public class Platform

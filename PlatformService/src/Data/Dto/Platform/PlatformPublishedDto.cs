@@ -1,4 +1,4 @@
-namespace PlatformService.Dtos.Platform;
+namespace PlatformService.Data.Dto.Platform;
 
 public class PlatformPublishedDto
 {

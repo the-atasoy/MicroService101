@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json;
-using PlatformService.Dtos.Platform;
+using PlatformService.Data.Dto.Platform;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace PlatformService.AsyncDataServices;
+namespace PlatformService.API.Messaging.RabbitMQ;
 
 public class MessageBusClient : IMessageBusClient
 {
