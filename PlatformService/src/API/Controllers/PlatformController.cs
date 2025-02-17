@@ -9,19 +9,26 @@ namespace PlatformService.API.Controllers;
 public class PlatformController(IPlatformHandler handler) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlatformReadDto>>> Get() => Ok(await handler.GetAllAsync());
+    public async Task<ActionResult<IEnumerable<PlatformReadDto>>> GetAll() => Ok(await handler.GetAll());
     
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PlatformReadDto>> GetById(Guid id)
+    public async Task<ActionResult<PlatformReadDto>> Get(Guid id)
     {
-        var result = await handler.GetByIdAsync(id);
+        var result = await handler.Get(id);
         return result == null ? NotFound() : Ok(result);
     }
     
     [HttpPost]
     public async Task<ActionResult> Create(PlatformCreateDto platform)
     {
-        var result = await handler.CreateAsync(platform);
+        var result = await handler.Create(platform);
         return result ? StatusCode(StatusCodes.Status201Created) : NotFound();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var result = await handler.Delete(id);
+        return result ? Ok() : NotFound();
     }
 }

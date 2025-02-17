@@ -8,24 +8,38 @@ namespace CommandService.API.Controllers;
 [ApiController]
 public class CommandController(ICommandHandler handler) : ControllerBase
 {
-    [HttpGet("{commandId}")]
-    public async Task<ActionResult<CommandReadDto>> Get(Guid platformId, Guid commandId)
-    {
-        var result = await handler.GetAsync(platformId, commandId);
-        return result is null ? NotFound() : Ok(result);
-    }
-    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CommandReadDto>>> GetAll(Guid platformId)
     {
-        var result = await handler.GetAllAsync(platformId);
+        var result = await handler.GetAll(platformId);
         return result.Any() ? Ok(result) : NotFound();
+    }
+    
+    [HttpGet("{commandId}")]
+    public async Task<ActionResult<CommandReadDto>> Get(Guid platformId, Guid commandId)
+    {
+        var result = await handler.Get(platformId, commandId);
+        return result is null ? NotFound() : Ok(result);
     }
     
     [HttpPost]
     public async Task<ActionResult> Create([FromBody]CommandCreateDto command, Guid platformId)
     {
-        var result = await handler.CreateAsync(command, platformId);
+        var result = await handler.Create(command, platformId);
         return result ? StatusCode(StatusCodes.Status201Created) : NotFound();
+    }
+    
+    [HttpPut("{commandId}")]
+    public async Task<ActionResult> Update([FromBody]CommandUpdateDto command, Guid platformId, Guid commandId)
+    {
+        var result = await handler.Update(command, platformId, commandId);
+        return result ? NoContent() : NotFound();
+    }
+    
+    [HttpDelete]
+    public async Task<ActionResult> Delete(Guid platformId, Guid commandId)
+    {
+        var result = await handler.Delete(platformId, commandId);
+        return result ? NoContent() : NotFound();
     }
 }

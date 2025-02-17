@@ -9,5 +9,5 @@ namespace CommandService.API.Controllers;
 public class PlatformController(IPlatformHandler handler) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlatformReadDto>>> Get() => Ok(await handler.GetAllAsync());
+    public async Task<ActionResult<IEnumerable<PlatformReadDto>>> Get() => Ok(await handler.GetAll());
 }

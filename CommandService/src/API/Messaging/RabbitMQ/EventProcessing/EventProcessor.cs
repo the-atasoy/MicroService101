@@ -28,7 +28,7 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
 
         try
         {
-            await handler.CreateAsync(platformPublishedDto!);
+            await handler.Create(platformPublishedDto!);
         }
         catch (Exception ex)
         {

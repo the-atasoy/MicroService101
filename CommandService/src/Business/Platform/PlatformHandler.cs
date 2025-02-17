@@ -7,10 +7,10 @@ namespace CommandService.Business.Platform;
 
 public class PlatformHandler(AppDbContext context, IMapper mapper) : IPlatformHandler
 {
-    public async Task<IEnumerable<PlatformReadDto>> GetAllAsync() =>
+    public async Task<IEnumerable<PlatformReadDto>> GetAll() =>
         mapper.Map<IEnumerable<PlatformReadDto>>(await context.Platform.ToListAsync());
 
-    public async Task CreateAsync(PlatformPublishedDto platform)
+    public async Task Create(PlatformPublishedDto platform)
     {
         if (!await context.Platform.AnyAsync(p => p.ExternalId == platform.Id)) return;
         var entity = mapper.Map<Data.Entity.Platform>(platform);

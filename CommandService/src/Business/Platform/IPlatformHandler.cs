@@ -4,6 +4,6 @@ namespace CommandService.Business.Platform;
 
 public interface IPlatformHandler
 {
-    Task<IEnumerable<PlatformReadDto>> GetAllAsync();
-    Task CreateAsync(PlatformPublishedDto platform);
+    Task<IEnumerable<PlatformReadDto>> GetAll();
+    Task Create(PlatformPublishedDto platform);
 }

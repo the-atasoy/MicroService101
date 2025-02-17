@@ -4,7 +4,7 @@ namespace PlatformService.Business.Platform;
 
 public interface IPlatformHandler
 {
-    Task<IEnumerable<PlatformReadDto>> GetAllAsync();
-    Task<PlatformReadDto?> GetByIdAsync(Guid id);
-    Task<bool> CreateAsync(PlatformCreateDto platform);
+    Task<IEnumerable<PlatformReadDto>> GetAll();
+    Task<PlatformReadDto?> Get(Guid id);
+    Task<bool> Create(PlatformCreateDto platform);
 }

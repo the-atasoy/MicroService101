@@ -6,12 +6,12 @@ namespace PlatformService.API.Messaging.gRPC;
 
 public class GrpcPlatformService(IPlatformHandler handler, IMapper mapper) : GrpcPlatform.GrpcPlatformBase
 {
-    public override async Task<PlatformResponse> GetAll(GetAllRequest request, ServerCallContext context)
+   public override Task<DeletePlatformResponse> DeleteCommand(DeletePlatformRequest request, ServerCallContext context)
     {
-        var platforms = await handler.GetAllAsync();
-        return new PlatformResponse
+        Console.WriteLine($"--> Received Grpc Request to delete commands for Platform: {request.PlatformId}");
+        return Task.FromResult(new DeletePlatformResponse
         {
-            Platform = { platforms.Select(platform => mapper.Map<GrpcPlatformModel>(platform)) }
-        };
+            Success = true
+        });
     }
 }
