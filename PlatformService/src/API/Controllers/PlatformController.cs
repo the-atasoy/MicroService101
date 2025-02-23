@@ -22,7 +22,7 @@ public class PlatformController(IPlatformHandler handler) : ControllerBase
     public async Task<ActionResult> Create(PlatformCreateDto platform)
     {
         var result = await handler.Create(platform);
-        return result ? StatusCode(StatusCodes.Status201Created) : NotFound();
+        return result ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
     }
 
     [HttpDelete("{id:guid}")]

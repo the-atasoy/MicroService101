@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlatformService";
+
+service GrpcCommand {
+    rpc DeleteCommand (DeleteCommandRequest) returns (DeleteCommandResponse);
+}
+
+message DeleteCommandRequest {
+    string platformId = 1;
+}
+
+message DeleteCommandResponse {
+    bool success = 1;
+}

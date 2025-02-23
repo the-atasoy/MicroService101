@@ -22,7 +22,7 @@ namespace CommandService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CommandService.Models.Command", b =>
+            modelBuilder.Entity("CommandService.Data.Entity.Command", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,10 +43,13 @@ namespace CommandService.Migrations
 
                     b.HasIndex("PlatformId");
 
+                    b.HasIndex("CommandLine", "PlatformId")
+                        .IsUnique();
+
                     b.ToTable("Command");
                 });
 
-            modelBuilder.Entity("CommandService.Models.Platform", b =>
+            modelBuilder.Entity("CommandService.Data.Entity.Platform", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,12 +64,15 @@ namespace CommandService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Platform");
                 });
 
-            modelBuilder.Entity("CommandService.Models.Command", b =>
+            modelBuilder.Entity("CommandService.Data.Entity.Command", b =>
                 {
-                    b.HasOne("CommandService.Models.Platform", "Platform")
+                    b.HasOne("CommandService.Data.Entity.Platform", "Platform")
                         .WithMany("Commands")
                         .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -75,7 +81,7 @@ namespace CommandService.Migrations
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("CommandService.Models.Platform", b =>
+            modelBuilder.Entity("CommandService.Data.Entity.Platform", b =>
                 {
                     b.Navigation("Commands");
                 });

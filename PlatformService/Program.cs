@@ -20,7 +20,6 @@ void Configure(WebApplication app)
 {
     app.UseHttpsRedirection();
     app.MapControllers();
-    app.MapGrpcService<GrpcPlatformService>();
     PrepDb.Migrate(app);
 }
 
@@ -32,12 +31,12 @@ void ConfigureServices(IServiceCollection services)
     
     services.AddScoped<IPlatformHandler, PlatformHandler>();
     services.AddSingleton<IMessageBusClient, MessageBusClient>();
-    services.AddGrpc();
     services.AddControllers(options =>
     {
         options.Filters.Add(new ConsumesAttribute("application/json"));
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
+    services.AddScoped<IGrpcCommandClient, GrpcCommandClient>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     
     Console.WriteLine($"--> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
