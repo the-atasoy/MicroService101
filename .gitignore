@@ -30,7 +30,6 @@ Thumbs.db
 
 # ASP.NET Core secrets and local settings
 secrets.json
-appsettings.*.json
 
 # NuGet
 *.nupkg
