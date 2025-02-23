@@ -21,11 +21,13 @@ public class PlatformHandler(
 
     public async Task<bool> Create(PlatformCreateDto platform)
     {
+        if (await context.Platform.Where(p => p.Name == platform.Name).AnyAsync()) return false;
+        
         var entity = mapper.Map<Data.Entity.Platform>(platform);
         await context.Platform.AddAsync(entity ?? throw new ArgumentNullException(nameof(entity)));
         try
         {
-            var platformPublishedDto = mapper.Map<PlatformPublishedDto>(platform);
+            var platformPublishedDto = mapper.Map<PlatformPublishedDto>(entity);
             platformPublishedDto.Event = "Platform_Published";
             await messageBusClient.PublishNewPlatform(platformPublishedDto);
         }

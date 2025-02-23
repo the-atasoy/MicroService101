@@ -26,7 +26,7 @@ public class CommandController(ICommandHandler handler) : ControllerBase
     public async Task<ActionResult> Create([FromBody]CommandCreateDto command, Guid platformId)
     {
         var result = await handler.Create(command, platformId);
-        return result ? StatusCode(StatusCodes.Status201Created) : NotFound();
+        return result ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
     }
     
     [HttpPut("{commandId}")]

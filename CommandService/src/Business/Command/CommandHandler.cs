@@ -26,6 +26,8 @@ public class CommandHandler(AppDbContext context, IMapper mapper) : ICommandHand
     public async Task<bool> Create(CommandCreateDto command, Guid platformId)
     {
         if (!await context.Platform.AnyAsync(p => p.Id == platformId)) return false;
+        if (await context.Command.AnyAsync(c => c.CommandLine == command.CommandLine && c.PlatformId == platformId)) return false;
+        
         var entity = mapper.Map<Data.Entity.Command>(command);
         entity.PlatformId = platformId;
         await context.AddAsync(entity ?? throw new ArgumentNullException(nameof(entity)));
@@ -54,10 +56,23 @@ public class CommandHandler(AppDbContext context, IMapper mapper) : ICommandHand
     
     public async Task<bool> DeleteAll(Guid platformId)
     {
-        var entities = await context.Command.Where(c => c.PlatformId == platformId).ToListAsync();
-        if (!entities.Any()) return false;
-        context.RemoveRange(entities);
-        var result = await context.SaveChangesAsync();
-        return result >= 0;
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var commands = await context.Command.Where(c => c.PlatformId == platformId).ToListAsync();
+            var platform = await context.Platform.FirstOrDefaultAsync(p => p.Id == platformId);
+
+            if (commands.Count != 0) context.RemoveRange(commands);
+            if (platform != null) context.Remove(platform);
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
     }
 }

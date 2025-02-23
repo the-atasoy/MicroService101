@@ -12,7 +12,7 @@ public class PlatformHandler(AppDbContext context, IMapper mapper) : IPlatformHa
 
     public async Task Create(PlatformPublishedDto platform)
     {
-        if (!await context.Platform.AnyAsync(p => p.ExternalId == platform.Id)) return;
+        if (await context.Platform.AnyAsync(p => p.ExternalId == platform.Id)) return;
         var entity = mapper.Map<Data.Entity.Platform>(platform);
         await context.Platform.AddAsync(entity ?? throw new ArgumentNullException(nameof(platform)));
         await context.SaveChangesAsync();
