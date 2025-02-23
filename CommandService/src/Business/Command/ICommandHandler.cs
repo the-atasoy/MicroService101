@@ -7,6 +7,7 @@ public interface ICommandHandler
     Task<CommandReadDto?> Get(Guid platformId, Guid commandId);
     Task<IEnumerable<CommandReadDto>> GetAll(Guid platformId);
     Task<bool> Create(CommandCreateDto command, Guid platformId);
-    Task<bool> Delete(Guid platformId, Guid commandId);
-    Task<bool> Update(CommandUpdateDto command, Guid platformId, Guid commandId);
+    Task<bool> Update(CommandUpdateDto command, Guid commandId);
+    Task<bool> Delete(Guid commandId);
+    Task<bool> DeleteAll(Guid platformId);
 }

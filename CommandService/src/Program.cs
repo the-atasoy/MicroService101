@@ -21,7 +21,8 @@ void Configure(WebApplication app)
 {
     app.UseHttpsRedirection();
     app.MapControllers();
-    PrepDb.Migrate(app).GetAwaiter().GetResult();
+    app.MapGrpcService<GrpcCommandService>();
+    PrepDb.Migrate(app);
 }
 
 void ConfigureServices(IServiceCollection services)
@@ -36,7 +37,7 @@ void ConfigureServices(IServiceCollection services)
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
     services.AddHostedService<MessageBusSubscriber>();
-    services.AddScoped<IPlatformDataClient, PlatformDataClient>();
+    services.AddGrpc();
     services.AddSingleton<IEventProcessor, EventProcessor>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }

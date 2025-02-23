@@ -8,7 +8,7 @@ namespace CommandService.Business.Platform;
 public class PlatformHandler(AppDbContext context, IMapper mapper) : IPlatformHandler
 {
     public async Task<IEnumerable<PlatformReadDto>> GetAll() =>
-        mapper.Map<IEnumerable<PlatformReadDto>>(await context.Platform.ToListAsync());
+        mapper.Map<IEnumerable<PlatformReadDto>>(await context.Platform.AsNoTracking().ToListAsync());
 
     public async Task Create(PlatformPublishedDto platform)
     {

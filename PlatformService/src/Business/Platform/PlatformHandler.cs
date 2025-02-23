@@ -1,6 +1,6 @@
 using AutoMapper;
-using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
+using PlatformService.API.Messaging.gRPC;
 using PlatformService.API.Messaging.RabbitMQ;
 using PlatformService.Data;
 using PlatformService.Data.Dto.Platform;
@@ -11,13 +11,13 @@ public class PlatformHandler(
     AppDbContext context,
     IMapper mapper,
     IMessageBusClient messageBusClient,
-    IConfiguration configuration) : IPlatformHandler
+    IGrpcCommandClient grpcCommandClient) : IPlatformHandler
 {
     public async Task<IEnumerable<PlatformReadDto>> GetAll() =>
-        mapper.Map<IEnumerable<PlatformReadDto>>(await context.Platform.ToListAsync());
+        mapper.Map<IEnumerable<PlatformReadDto>>(await context.Platform.AsNoTracking().ToListAsync());
     
     public async Task<PlatformReadDto?> Get(Guid id) =>
-        mapper.Map<PlatformReadDto>(await context.Platform.FirstOrDefaultAsync(p => p.Id == id));
+        mapper.Map<PlatformReadDto>(await context.Platform.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id));
 
     public async Task<bool> Create(PlatformCreateDto platform)
     {
@@ -34,27 +34,17 @@ public class PlatformHandler(
             Console.WriteLine($"--> Could not send asynchronously: {e.Message}");
             return false;
         }
-        var result = await context.SaveChangesAsync();
-        return result >= 0;
+        return await context.SaveChangesAsync() >= 0;
     }
 
     public async Task<bool> Delete(Guid id)
     {
         var entity = await context.Platform.FindAsync(id);
         context.Platform.Remove(entity ?? throw new ArgumentNullException(nameof(entity)));
-        try
-        {
-            var channel = GrpcChannel.ForAddress("http://platforms-clusterip-srv:666");
-            var client = new GrpcPlatform.GrpcPlatformClient(channel);
-            var request = new DeletePlatformRequest { PlatformId = id.ToString() };
-            client.DeleteCommand(request);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        var result = await context.SaveChangesAsync();
-        return result >= 0;
+        
+        var grpcResponse = grpcCommandClient.DeleteCommand(id);
+        if (!grpcResponse) return false;
+        
+        return await context.SaveChangesAsync() >= 0;
     }
 }

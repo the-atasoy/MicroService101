@@ -30,16 +30,16 @@ public class CommandController(ICommandHandler handler) : ControllerBase
     }
     
     [HttpPut("{commandId}")]
-    public async Task<ActionResult> Update([FromBody]CommandUpdateDto command, Guid platformId, Guid commandId)
+    public async Task<ActionResult> Update([FromBody]CommandUpdateDto command, Guid commandId)
     {
-        var result = await handler.Update(command, platformId, commandId);
+        var result = await handler.Update(command, commandId);
         return result ? NoContent() : NotFound();
     }
     
     [HttpDelete]
-    public async Task<ActionResult> Delete(Guid platformId, Guid commandId)
+    public async Task<ActionResult> Delete(Guid commandId)
     {
-        var result = await handler.Delete(platformId, commandId);
+        var result = await handler.Delete(commandId);
         return result ? NoContent() : NotFound();
     }
 }
