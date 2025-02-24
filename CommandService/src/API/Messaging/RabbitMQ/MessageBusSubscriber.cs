@@ -5,24 +5,35 @@ using RabbitMQ.Client.Events;
 
 namespace CommandService.API.Messaging.RabbitMQ;
 
-public class MessageBusSubscriber : BackgroundService
+public class MessageBusSubscriber(IConfiguration configuration, IEventProcessor eventProcessor) : BackgroundService, IAsyncDisposable
 {
-    private IConnection _connection;
-    private IChannel _channel;
-    private string _queueName;
-    private readonly IConfiguration _configuration;
-    private readonly IEventProcessor _eventProcessor;
-
-    public MessageBusSubscriber(IConfiguration configuration, IEventProcessor eventProcessor)
+    private IConnection? _connection;
+    private IChannel? _channel;
+    private string? _queueName;
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _configuration = configuration;
-        _eventProcessor = eventProcessor;
-        InitializeRabbitMq().GetAwaiter().GetResult();
+        stoppingToken.ThrowIfCancellationRequested();
+        await InitializeRabbitMq();
+        if (_channel == null)
+            throw new InvalidOperationException("RabbitMQ channel was not initialized properly");
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+        consumer.ReceivedAsync += (_, eventArgs) =>
+        {
+            Console.WriteLine("--> Event Received!");
+            var body = eventArgs.Body;
+            var message = Encoding.UTF8.GetString(body.ToArray());
+            eventProcessor.ProcessEvent(message);
+            return Task.CompletedTask;
+        };
+        if (_queueName == null)
+            throw new InvalidOperationException("Queue name was not initialized properly");
+        await _channel.BasicConsumeAsync(queue: _queueName, autoAck: true, consumer: consumer, cancellationToken: stoppingToken);
     }
 
     private async Task InitializeRabbitMq()
     {
-        var factory = new ConnectionFactory() {HostName = _configuration["RabbitMQ:HostName"]!, Port = int.Parse(_configuration["RabbitMQ:Port"]!)};
+        var factory = new ConnectionFactory() {HostName = configuration["RabbitMQ:HostName"]!, Port = int.Parse(configuration["RabbitMQ:Port"]!)};
         
         try
         {
@@ -45,28 +56,19 @@ public class MessageBusSubscriber : BackgroundService
         return Task.CompletedTask;
     }
     
-    public async Task Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Console.WriteLine("--> MessageBus Disposed");
+        if (_channel == null)
+            throw new InvalidOperationException("RabbitMQ channel was not initialized properly");
+        if(_connection == null)
+            throw new InvalidOperationException("RabbitMQ connection was not initialized properly");
         if(_channel.IsOpen)
         {
             await _channel.CloseAsync();
             await _connection.CloseAsync();
         }
-    }
-    
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        stoppingToken.ThrowIfCancellationRequested();
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += (_, eventArgs) =>
-        {
-            Console.WriteLine("--> Event Received!");
-            var body = eventArgs.Body;
-            var message = Encoding.UTF8.GetString(body.ToArray());
-            _eventProcessor.ProcessEvent(message);
-            return Task.CompletedTask;
-        };
-        await _channel.BasicConsumeAsync(queue: _queueName, autoAck: true, consumer: consumer, cancellationToken: stoppingToken);
+        Console.WriteLine("--> MessageBus Disposed");
+        base.Dispose();
+        await ValueTask.CompletedTask;
     }
 }

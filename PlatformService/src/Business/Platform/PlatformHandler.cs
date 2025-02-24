@@ -28,7 +28,28 @@ public class PlatformHandler(
         try
         {
             var platformPublishedDto = mapper.Map<PlatformPublishedDto>(entity);
-            platformPublishedDto.Event = "Platform_Published";
+            platformPublishedDto.Event = "Platform_Create";
+            await messageBusClient.PublishNewPlatform(platformPublishedDto);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"--> Could not send asynchronously: {e.Message}");
+            return false;
+        }
+        return await context.SaveChangesAsync() >= 0;
+    }
+    
+    public async Task<bool> Update(Guid id, PlatformUpdateDto platform)
+    {
+        var entity = await context.Platform.FindAsync(id);
+        if (entity == null) return false;
+        
+        mapper.Map(platform, entity);
+        context.Platform.Update(entity);
+        try
+        {
+            var platformPublishedDto = mapper.Map<PlatformPublishedDto>(entity);
+            platformPublishedDto.Event = "Platform_Update";
             await messageBusClient.PublishNewPlatform(platformPublishedDto);
         }
         catch (Exception e)

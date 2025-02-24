@@ -33,7 +33,6 @@ void ConfigureServices(IServiceCollection services)
     services.AddScoped<ICommandHandler, CommandHandler>();
     services.AddControllers(options =>
     {
-        options.Filters.Add(new ConsumesAttribute("application/json"));
         options.Filters.Add(new ProducesAttribute("application/json"));
     });
     services.AddHostedService<MessageBusSubscriber>();

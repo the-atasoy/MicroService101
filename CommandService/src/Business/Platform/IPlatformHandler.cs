@@ -6,4 +6,5 @@ public interface IPlatformHandler
 {
     Task<IEnumerable<PlatformReadDto>> GetAll();
     Task Create(PlatformPublishedDto platform);
+    Task Update(PlatformPublishedDto platformPublishedDto);
 }

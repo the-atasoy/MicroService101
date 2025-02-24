@@ -8,7 +8,7 @@ namespace CommandService.Business.Command;
 public class CommandHandler(AppDbContext context, IMapper mapper) : ICommandHandler
 {
     public async Task<CommandReadDto?> Get(Guid platformId, Guid commandId) =>
-        mapper.Map<CommandReadDto>(await context.Command.AsNoTracking().FirstOrDefaultAsync());
+        mapper.Map<CommandReadDto>(await context.Command.AsNoTracking().Where(c => c.PlatformId == platformId && c.Id == commandId).FirstOrDefaultAsync());
 
     public async Task<IEnumerable<CommandReadDto>> GetAll(Guid platformId)
     {

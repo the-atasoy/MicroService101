@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "d1adbab0-1990-4a95-9cc5-b1aba0bfb50d",
+		"name": "Microservice101",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32571014"
+	},
+	"item": [
+		{
+			"name": "PlatformService",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{platformLocal}}/Platform",
+							"host": [
+								"{{platformLocal}}"
+							],
+							"path": [
+								"Platform"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{platformLocal}}/Platform/019539c4-2dfb-74ae-9584-b851b64bd280",
+							"host": [
+								"{{platformLocal}}"
+							],
+							"path": [
+								"Platform",
+								"019539c4-2dfb-74ae-9584-b851b64bd280"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"JAVA\",\n    \"publisher\": \"Oracle\",\n    \"cost\": \"OpenSource\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{platformLocal}}/Platform",
+							"host": [
+								"{{platformLocal}}"
+							],
+							"path": [
+								"Platform"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{platformLocal}}/Platform/019539c4-2dfb-74ae-9584-b851b64bd280",
+							"host": [
+								"{{platformLocal}}"
+							],
+							"path": [
+								"Platform",
+								"019539c4-2dfb-74ae-9584-b851b64bd280"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"name\": \"Java\",\n        \"publisher\": \"Oracle\",\n        \"cost\": \"Open Source\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{platformLocal}}/Platform/019539c4-2dfb-74ae-9584-b851b64bd280",
+							"host": [
+								"{{platformLocal}}"
+							],
+							"path": [
+								"Platform",
+								"019539c4-2dfb-74ae-9584-b851b64bd280"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CommandService",
+			"item": [
+				{
+					"name": "Command",
+					"item": [
+						{
+							"name": "Get",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{commandLocal}}/c/Command/019539c4-2dfb-74ae-9584-b851b64bd280/019539c6-3613-70f9-ba6f-881954d756d1",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Command",
+										"019539c4-2dfb-74ae-9584-b851b64bd280",
+										"019539c6-3613-70f9-ba6f-881954d756d1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAll",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{commandLocal}}/c/Command/019539c4-2dfb-74ae-9584-b851b64bd280",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Command",
+										"019539c4-2dfb-74ae-9584-b851b64bd280"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"howTo\": \"learn installed java version\",\n    \"commandLine\": \"java version\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{commandLocal}}/c/Command/019539c4-2dfb-74ae-9584-b851b64bd280",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Command",
+										"019539c4-2dfb-74ae-9584-b851b64bd280"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n        \"howTo\": \"see installed java version\",\n        \"commandLine\": \"java version\"\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{commandLocal}}/c/Command/019539c4-2dfb-74ae-9584-b851b64bd280/019539c6-3613-70f9-ba6f-881954d756d1",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Command",
+										"019539c4-2dfb-74ae-9584-b851b64bd280",
+										"019539c6-3613-70f9-ba6f-881954d756d1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{commandLocal}}/c/Command/019539c4-2dfb-74ae-9584-b851b64bd280/019539c6-3613-70f9-ba6f-881954d756d1",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Command",
+										"019539c4-2dfb-74ae-9584-b851b64bd280",
+										"019539c6-3613-70f9-ba6f-881954d756d1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Platform",
+					"item": [
+						{
+							"name": "GetAll",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{commandLocal}}/c/Platform",
+									"host": [
+										"{{commandLocal}}"
+									],
+									"path": [
+										"c",
+										"Platform"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

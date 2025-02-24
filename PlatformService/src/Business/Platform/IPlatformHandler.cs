@@ -8,4 +8,5 @@ public interface IPlatformHandler
     Task<PlatformReadDto?> Get(Guid id);
     Task<bool> Create(PlatformCreateDto platform);
     Task<bool> Delete(Guid id);
+    Task<bool> Update(Guid id, PlatformUpdateDto platform);
 }
