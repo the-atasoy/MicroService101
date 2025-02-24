@@ -17,4 +17,13 @@ public class PlatformHandler(AppDbContext context, IMapper mapper) : IPlatformHa
         await context.Platform.AddAsync(entity ?? throw new ArgumentNullException(nameof(platform)));
         await context.SaveChangesAsync();
     }
+
+    public async Task Update(PlatformPublishedDto platform)
+    {
+        var entity = await context.Platform.Where(p => p.ExternalId == platform.Id).FirstOrDefaultAsync();
+        if (entity == null) throw new ArgumentNullException(nameof(platform));
+        mapper.Map(platform, entity);
+        context.Platform.Update(entity);
+        await context.SaveChangesAsync();
+    }
 }

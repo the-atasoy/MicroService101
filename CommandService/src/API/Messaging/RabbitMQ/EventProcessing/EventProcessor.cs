@@ -12,15 +12,16 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
         var eventType = DetermineEvent(message);
         switch (eventType)
         {
-            case EventType.PlatformPublished:
-                await AddPlatform(message);
+            case EventType.PlatformCreate:
+                await CreatePlatform(message);
                 break;
-            default:
+            case EventType.PlatformUpdate:
+                await UpdatePlatform(message);
                 break;
         }
     }
 
-    private async Task AddPlatform(string platformPublishedMessage)
+    private async Task CreatePlatform(string platformPublishedMessage)
     {
         using var serviceScope = serviceScopeFactory.CreateScope();
         var handler = serviceScope.ServiceProvider.GetRequiredService<IPlatformHandler>();
@@ -32,7 +33,24 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"--> Could not add Platform to DB: {ex.Message}");;
+            Console.WriteLine($"--> Could not create Platform: {ex.Message}");;
+            throw;
+        }
+    }
+    
+    private async Task UpdatePlatform(string platformPublishedMessage)
+    {
+        using var serviceScope = serviceScopeFactory.CreateScope();
+        var handler = serviceScope.ServiceProvider.GetRequiredService<IPlatformHandler>();
+        var platformPublishedDto = JsonSerializer.Deserialize<PlatformPublishedDto>(platformPublishedMessage);
+
+        try
+        {
+            await handler.Update(platformPublishedDto);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"--> Could not update Platform: {ex.Message}");;
             throw;
         }
     }
@@ -43,9 +61,12 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
         var eventType = JsonSerializer.Deserialize<GenericEventDto>(notificaitonMesssage);
         switch (eventType?.Event)
         {
-            case "Platform_Published":
-                Console.WriteLine("--> Platform Published Event Detected");
-                return EventType.PlatformPublished;
+            case "Platform_Create":
+                Console.WriteLine("--> Platform Create Event Detected");
+                return EventType.PlatformCreate;
+            case "Platform_Update":
+                Console.WriteLine("--> Platform Update Event Detected");
+                return EventType.PlatformUpdate;
             default:
                 Console.WriteLine("--> Could not determine the event type");
                 return EventType.Undetermined;
@@ -55,6 +76,7 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
 
 internal enum EventType
 {
-    PlatformPublished,
+    PlatformCreate,
+    PlatformUpdate,
     Undetermined
 }

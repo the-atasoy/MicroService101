@@ -24,7 +24,14 @@ public class PlatformController(IPlatformHandler handler) : ControllerBase
         var result = await handler.Create(platform);
         return result ? StatusCode(StatusCodes.Status201Created) : StatusCode(StatusCodes.Status409Conflict);
     }
-
+    
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> Update(Guid id, PlatformUpdateDto platform)
+    {
+        var result = await handler.Update(id, platform);
+        return result ? Ok() : NotFound();
+    }
+    
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id)
     {

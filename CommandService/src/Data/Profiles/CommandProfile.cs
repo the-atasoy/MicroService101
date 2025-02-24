@@ -10,5 +10,6 @@ public class CommandProfile : Profile
     {
         CreateMap<Command, CommandReadDto>();
         CreateMap<CommandCreateDto, Command>();
+        CreateMap<CommandUpdateDto, Command>();
     }
 }

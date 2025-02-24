@@ -36,7 +36,7 @@ public class CommandController(ICommandHandler handler) : ControllerBase
         return result ? NoContent() : NotFound();
     }
     
-    [HttpDelete]
+    [HttpDelete("{commandId}")]
     public async Task<ActionResult> Delete(Guid commandId)
     {
         var result = await handler.Delete(commandId);
