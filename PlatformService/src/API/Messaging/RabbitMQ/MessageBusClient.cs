@@ -6,30 +6,58 @@ using RabbitMQ.Client.Events;
 
 namespace PlatformService.API.Messaging.RabbitMQ;
 
-public class MessageBusClient : IMessageBusClient
+public class MessageBusClient(IConfiguration configuration) : IMessageBusClient
 {
-    private readonly IConnection _connection = null!;
-    private readonly IChannel _channel = null!;
-
-    public MessageBusClient(IConfiguration configuration)
+    private IConnection _connection = null!;
+    private IChannel _channel = null!;
+    private bool _initialized;
+    
+    private async Task Initialize()
     {
-        var factory = new ConnectionFactory() {HostName = configuration["RabbitMQ:HostName"]!, Port = int.Parse(configuration["RabbitMQ:Port"]!)};
-        try
+        if (_initialized) return;
+
+        var factory = new ConnectionFactory()
         {
-            _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
-            _channel.ExchangeDeclareAsync(exchange: "trigger", type: ExchangeType.Fanout);
-            _connection.ConnectionShutdownAsync += RabbitMQ_ConnectionShutdown;
-            Console.WriteLine("--> Connected to Message Bus");
-        }
-        catch (Exception ex)
+            HostName = configuration["RabbitMQ:HostName"]!,
+            Port = int.Parse(configuration["RabbitMQ:Port"]!)
+        };
+
+        const int maxRetries = 5;
+        const int delaySeconds = 5;
+
+        for (var i = 0; i < maxRetries; i++)
         {
-            Console.WriteLine($"--> Could not connect to Message Bus: {ex.Message}");
+            try
+            {
+                Console.WriteLine($"--> Attempting to connect to Message Bus (Attempt {i + 1}/{maxRetries})");
+                _connection = await factory.CreateConnectionAsync();
+                _channel = await _connection.CreateChannelAsync();
+                await _channel.ExchangeDeclareAsync(exchange: "trigger", type: ExchangeType.Fanout);
+
+                _connection.ConnectionShutdownAsync += RabbitMQ_ConnectionShutdown;
+                Console.WriteLine("--> Connected to Message Bus");
+                _initialized = true;
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"--> Could not connect to Message Bus: {ex.Message}");
+
+                if (i == maxRetries - 1)
+                {
+                    Console.WriteLine("--> Connection failed after all retry attempts");
+                    throw;
+                }
+
+                Console.WriteLine($"--> Retrying in {delaySeconds} seconds...");
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+            }
         }
     }
     
     public async Task PublishNewPlatform(PlatformPublishedDto platformPublishedDto)
     {
+        await Initialize();
         var message = JsonSerializer.Serialize(platformPublishedDto);
         if(_connection.IsOpen)
         {

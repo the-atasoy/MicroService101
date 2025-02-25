@@ -14,7 +14,7 @@ public class MessageBusSubscriber(IConfiguration configuration, IEventProcessor 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
-        await InitializeRabbitMq();
+        await Initialize();
         if (_channel == null)
             throw new InvalidOperationException("RabbitMQ channel was not initialized properly");
         var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -31,23 +31,45 @@ public class MessageBusSubscriber(IConfiguration configuration, IEventProcessor 
         await _channel.BasicConsumeAsync(queue: _queueName, autoAck: true, consumer: consumer, cancellationToken: stoppingToken);
     }
 
-    private async Task InitializeRabbitMq()
+    private async Task Initialize()
     {
-        var factory = new ConnectionFactory() {HostName = configuration["RabbitMQ:HostName"]!, Port = int.Parse(configuration["RabbitMQ:Port"]!)};
-        
-        try
+        var factory = new ConnectionFactory() 
+        { 
+            HostName = configuration["RabbitMQ:HostName"]!, 
+            Port = int.Parse(configuration["RabbitMQ:Port"]!)
+        };
+    
+        const int maxRetries = 10;
+        const int delaySeconds = 5;
+
+        for (var i = 0; i < maxRetries; i++)
         {
-            _connection = await factory.CreateConnectionAsync();
-            _channel = await _connection.CreateChannelAsync();
-            await _channel.ExchangeDeclareAsync(exchange: "trigger", type: ExchangeType.Fanout);
-            _queueName = (await _channel.QueueDeclareAsync()).QueueName;
-            await _channel.QueueBindAsync(queue: _queueName, exchange: "trigger", routingKey: "");
-            Console.WriteLine("--> Connected to Message Bus");
-            _connection.ConnectionShutdownAsync += RabbitMQ_ConnectionShutdown;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"--> Could not connect to Message Bus: {ex.Message}");
+            try
+            {
+                Console.WriteLine($"--> Attempting to connect to Message Bus (Attempt {i + 1}/{maxRetries})");
+                _connection = await factory.CreateConnectionAsync();
+                _channel = await _connection.CreateChannelAsync();
+                await _channel.ExchangeDeclareAsync(exchange: "trigger", type: ExchangeType.Fanout);
+                _queueName = (await _channel.QueueDeclareAsync()).QueueName;
+                await _channel.QueueBindAsync(queue: _queueName, exchange: "trigger", routingKey: "");
+            
+                _connection.ConnectionShutdownAsync += RabbitMQ_ConnectionShutdown;
+                Console.WriteLine("--> Connected to Message Bus");
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"--> Could not connect to Message Bus: {ex.Message}");
+            
+                if (i == maxRetries - 1)
+                {
+                    Console.WriteLine("--> Connection failed after all retry attempts");
+                    throw;
+                }
+            
+                Console.WriteLine($"--> Retrying in {delaySeconds} seconds...");
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+            }
         }
     }
     private Task RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
