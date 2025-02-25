@@ -46,7 +46,7 @@ public class EventProcessor(IServiceScopeFactory serviceScopeFactory) : IEventPr
 
         try
         {
-            await handler.Update(platformPublishedDto);
+            await handler.Update(platformPublishedDto ?? throw new InvalidOperationException("PlatformPublishedDto is null while updating"));
         }
         catch (Exception ex)
         {
