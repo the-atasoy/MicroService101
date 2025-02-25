@@ -17,18 +17,21 @@ Configure(application);
 
 application.Run();
 
-void Configure(WebApplication app)
-{
-    app.UseHttpsRedirection();
-    app.MapControllers();
-    app.MapGrpcService<GrpcCommandService>();
-    PrepDb.Migrate(app);
-}
-
 void ConfigureServices(IServiceCollection services)
 {
     services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    
+    services.AddCors(options =>
+    {
+        options.AddPolicy("CustomPolicy",
+            policyBuilder => policyBuilder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+    });
+    
     services.AddScoped<IPlatformHandler, PlatformHandler>();
     services.AddScoped<ICommandHandler, CommandHandler>();
     services.AddControllers(options =>
@@ -39,4 +42,13 @@ void ConfigureServices(IServiceCollection services)
     services.AddGrpc();
     services.AddSingleton<IEventProcessor, EventProcessor>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+}
+
+void Configure(WebApplication app)
+{
+    app.UseHttpsRedirection();
+    app.UseCors("CustomPolicy");
+    app.MapControllers();
+    app.MapGrpcService<GrpcCommandService>();
+    PrepDb.Migrate(app);
 }

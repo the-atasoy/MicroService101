@@ -16,18 +16,21 @@ Configure(application);
 
 application.Run();
 
-void Configure(WebApplication app)
-{
-    app.UseHttpsRedirection();
-    app.MapControllers();
-    PrepDb.Migrate(app);
-}
-
 void ConfigureServices(IServiceCollection services)
 {
     Console.WriteLine($"--> Environment: {environment.EnvironmentName}");
     services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    
+    services.AddCors(options =>
+    {
+        options.AddPolicy("CustomPolicy",
+            policyBuilder => policyBuilder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+    });
     
     services.AddScoped<IPlatformHandler, PlatformHandler>();
     services.AddSingleton<IMessageBusClient, MessageBusClient>();
@@ -39,4 +42,12 @@ void ConfigureServices(IServiceCollection services)
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     
     Console.WriteLine($"--> CommandService Base URL: {builder.Configuration["CommandService:BaseUrl"]}");
+}
+
+void Configure(WebApplication app)
+{
+    app.UseHttpsRedirection();
+    app.UseCors("CustomPolicy");
+    app.MapControllers();
+    PrepDb.Migrate(app);
 }
