@@ -10,7 +10,7 @@ public static class PrepDb
     public static void Migrate(IApplicationBuilder app)
     {
         using var serviceScope = app.ApplicationServices.CreateScope();
-        const int maxRetries = 5;
+        const int maxRetries = 10;
         const int delaySeconds = 5;
         
         for (var i = 0; i < maxRetries; i++)

@@ -22,7 +22,7 @@ public class MessageBusClient(IConfiguration configuration) : IMessageBusClient
             Port = int.Parse(configuration["RabbitMQ:Port"]!)
         };
 
-        const int maxRetries = 5;
+        const int maxRetries = 10;
         const int delaySeconds = 5;
 
         for (var i = 0; i < maxRetries; i++)
