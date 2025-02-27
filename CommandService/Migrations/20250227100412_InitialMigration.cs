@@ -45,9 +45,21 @@ namespace CommandService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Command_CommandLine_PlatformId",
+                table: "Command",
+                columns: new[] { "CommandLine", "PlatformId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Command_PlatformId",
                 table: "Command",
                 column: "PlatformId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Platform_Name",
+                table: "Platform",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />

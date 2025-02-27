@@ -37,9 +37,6 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# Entity Framework migrations
-*.Designer.cs
-
 # Temporary files
 ~$*
 
