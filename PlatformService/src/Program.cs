@@ -26,10 +26,9 @@ void ConfigureServices(IServiceCollection services)
     {
         options.AddPolicy("CustomPolicy",
             policyBuilder => policyBuilder
-                .WithOrigins("http://localhost:3000")
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+                .AllowAnyHeader());
     });
     
     services.AddScoped<IPlatformHandler, PlatformHandler>();
